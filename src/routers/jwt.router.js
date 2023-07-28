@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { generateToken, authToken } from '../utils.js'
+import passport from 'passport'
 
 const router = Router()
 
@@ -27,8 +28,9 @@ router.post('/login', (req, res) => {
     res.cookie('mysecretjwt', access_token, { signed: true }).json({ status: 'sucsess', access_token })
 })
 
-router.get('/private', authToken, (req, res) => {
-    if (req.user.rol === 'admin') return res.json({ status: 'success', payload: req.user })
+router.get('/private', passport.authenticate('jwt', { session: false }), (req, res) => {
+    console.log(req.user)
+    if (req.user.user.rol === 'admin') return res.json({ status: 'success', payload: req.user.user })
     return res.json({ status: 'error', error: 'No tienes los permisos para ver esta sección' })
 })
 
